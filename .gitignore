@@ -40,6 +40,6 @@ yarn-error.*
 /ios
 /android
 .env
-agent.md
+.agent.md
 .idea
-design.md
+.design.md
