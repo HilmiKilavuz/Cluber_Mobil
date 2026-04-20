@@ -1,8 +1,8 @@
-# Cluber Mobile 📱
+# Cluber Mobile 
 
 Cluber Mobile, üniversite ve topluluk kulüplerini dijital ortamda yönetmeye yarayan **iOS & Android** uygulamasıdır. Kullanıcıların kulüp oluşturmasına, etkinliklere katılmasına ve topluluk içi gerçek zamanlı sohbet etmesine olanak tanır. Cluber Web projesiyle aynı güçlü backend altyapısını kullanır.
 
-## 🚀 Özellikler
+##  Özellikler
 
 - **Gelişmiş Kimlik Doğrulama:** JWT tabanlı, e-posta onaylı ve güvenli (Expo Secure Store) oturum yönetimi.
 - **Kulüp Yönetimi:** Kulüp oluşturma, düzenleme, katılma, ayrılma ve üye rolleri (Owner, Admin, Moderator, Member).
@@ -11,7 +11,7 @@ Cluber Mobile, üniversite ve topluluk kulüplerini dijital ortamda yönetmeye y
 - **Dinamik UI:** React Native Reanimated ile desteklenmiş, karanlık/aydınlık (Dark/Light) tema destekli özel "Editorial" tasarım dili.
 - **Admin Paneli:** Kulüp yöneticileri için üye çıkarma, kulüp silme gibi gelişmiş kontroller.
 
-## 🛠 Teknoloji Yığını
+##  Teknoloji Yığını
 
 - **Framework:** [Expo SDK 52+](https://expo.dev/) (React Native)
 - **Routing:** Expo Router v4 (Dosya tabanlı navigasyon)
@@ -22,7 +22,7 @@ Cluber Mobile, üniversite ve topluluk kulüplerini dijital ortamda yönetmeye y
 - **Form & Validasyon:** React Hook Form + Zod
 - **Güvenlik:** Expo Secure Store
 
-## 📂 Proje Yapısı
+##  Proje Yapısı
 
 \`\`\`text
 Cluber_Mobil/
@@ -37,7 +37,7 @@ Cluber_Mobil/
 └── lib/                  # Yardımcı fonksiyonlar, Token yönetimi, Socket factory
 \`\`\`
 
-## ⚙️ Kurulum ve Geliştirme
+##  Kurulum ve Geliştirme
 
 ### Gereksinimler
 - Node.js (v18 veya üzeri)
@@ -71,5 +71,5 @@ npx expo start --clear
 \`\`\`
 *(Açılan terminaldeki QR kodu telefonunuzun kamerasıyla veya Expo Go uygulamasıyla okutarak uygulamayı test edebilirsiniz.)*
 
-## 🔒 Güvenlik Notu
+##  Güvenlik Notu
 - Uygulamanın geliştirme notlarını içeren \`agent.md\`, \`design.md\` ve ortam değişkeni barındıran \`.env\` dosyaları \`.gitignore\` içine dahil edilmiştir ve versiyon kontrol sistemine (GitHub) aktarılmaz.
