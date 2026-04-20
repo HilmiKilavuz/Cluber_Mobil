@@ -1,15 +1,15 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# ── Bağımlılıklar ─────────────────────────────────────────────────────────────
 node_modules/
 
-# Expo
+# ── Expo ──────────────────────────────────────────────────────────────────────
 .expo/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ── Native (EAS Build) ────────────────────────────────────────────────────────
 .kotlin/
 *.orig.*
 *.jks
@@ -17,29 +17,49 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+/ios
+/android
 
-# Metro
+# ── Metro bundler ─────────────────────────────────────────────────────────────
 .metro-health-check*
 
-# debug
+# ── Ortam değişkenleri (ASLA commit etme) ────────────────────────────────────
+.env
+.env.local
+.env*.local
+.env.development
+.env.production
+.env.test
+
+# ── Debug / Log dosyaları ─────────────────────────────────────────────────────
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
-# macOS
+# ── İşletim sistemi dosyaları ─────────────────────────────────────────────────
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Sertifika / Güvenlik dosyaları ───────────────────────────────────────────
 *.pem
+*.p8
+*.p12
+*.mobileprovision
 
-# local env files
-.env*.local
-
-# typescript
+# ── TypeScript ────────────────────────────────────────────────────────────────
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
-.env
-.agent.md
-.idea
-.design.md
+# ── Editör / IDE ayarları ─────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Agent / Geliştirici dokümantasyonu (GitHub'a gitmesin) ───────────────────
+agent.md
+design.md
+
+# ── EAS / Build çıktıları ─────────────────────────────────────────────────────
+eas-build-pre-install.sh

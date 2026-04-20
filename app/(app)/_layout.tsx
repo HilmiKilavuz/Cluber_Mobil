@@ -1,34 +1,27 @@
 // app/(app)/_layout.tsx
 // Ana uygulama layout — auth guard + bottom tab navigator
+// useAuth hook ile oturum kontrolü yapılır
 
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/ui/useColorScheme';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { Typography } from '@/constants/Typography';
-
-// useAuth hook buraya import edilecek — şimdilik stub
-function useAuthGuard() {
-  // TODO: return { isLoading, isAuthenticated } from useAuth hook
-  return { isLoading: false, isAuthenticated: true };
-}
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function AppLayout() {
   const c = useColors();
-  const { isLoading, isAuthenticated } = useAuthGuard();
+  const { sessionQuery } = useAuth();
 
   // Oturum kontrol ediliyor
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg }}>
-        <ActivityIndicator color={c.accent} />
-      </View>
-    );
+  if (sessionQuery.isLoading) {
+    return <LoadingSpinner fullScreen />;
   }
 
   // Oturum yoksa login'e yönlendir
-  if (!isAuthenticated) {
+  if (!sessionQuery.data) {
     return <Redirect href="/(auth)/login" />;
   }
 
@@ -79,6 +72,8 @@ export default function AppLayout() {
           ),
         }}
       />
+      {/* Gizli rotalar — tab bar'da görünmez */}
+      <Tabs.Screen name="clubs" options={{ href: null }} />
     </Tabs>
   );
 }

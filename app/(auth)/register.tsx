@@ -1,5 +1,5 @@
-// app/(auth)/login.tsx
-// Giriş ekranı — react-hook-form + zod validasyon
+// app/(auth)/register.tsx
+// Kayıt ekranı — e-posta, görüntülenecek ad, şifre
 
 import React from 'react';
 import {
@@ -18,43 +18,57 @@ import { Link, router } from 'expo-router';
 import { ScreenWrapper } from '@/components/layout/ScreenWrapper';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { BackHeader } from '@/components/layout/BackHeader';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useColors } from '@/hooks/ui/useColorScheme';
 import { Typography } from '@/constants/Typography';
 import { Spacing, Layout } from '@/constants/Tokens';
-import Toast from 'react-native-toast-message';
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  displayName: z
+    .string()
+    .min(2, 'Ad en az 2 karakter olmalı')
+    .max(50, 'Ad en fazla 50 karakter olabilir'),
   email: z.string().min(1, 'E-posta gereklidir').email('Geçerli bir e-posta giriniz'),
-  password: z.string().min(1, 'Şifre gereklidir'),
+  password: z
+    .string()
+    .min(6, 'Şifre en az 6 karakter olmalı')
+    .max(100, 'Şifre çok uzun'),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type RegisterFormData = z.infer<typeof registerSchema>;
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const c = useColors();
-  const { loginMutation } = useAuth();
+  const { registerMutation } = useAuth();
 
   const {
     control,
     handleSubmit,
+    getValues,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { displayName: '', email: '', password: '' },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: RegisterFormData) => {
     try {
-      await loginMutation.mutateAsync(data);
-      router.replace('/(app)');
+      await registerMutation.mutateAsync(data);
+      // Kayıt başarılı → e-posta doğrulama ekranına yönlendir
+      router.push({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        pathname: '/(auth)/verify-email' as any,
+        params: { email: data.email },
+      });
     } catch {
-      // Hata axiosInstance interceptor tarafından toast olarak gösterilir
+      // Hata interceptor tarafından gösterilir
     }
   };
 
   return (
     <ScreenWrapper>
+      <BackHeader title="Kayıt Ol" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -64,18 +78,37 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo / Başlık */}
           <View style={styles.header}>
-            <Text style={[Typography.displayLg, { color: c.ink, fontFamily: 'DM-Sans-Bold' }]}>
-              Cluber
+            <Text style={[Typography.displayMd, { color: c.ink }]}>
+              Hesap Oluştur
             </Text>
-            <Text style={[Typography.bodyMd, { color: c.inkSecondary, marginTop: Spacing[2] }]}>
-              Topluluğuna giriş yap
+            <Text
+              style={[
+                Typography.bodyMd,
+                { color: c.inkSecondary, marginTop: Spacing[2] },
+              ]}
+            >
+              Kayıt olduktan sonra e-postanı doğrulaman gerekecek.
             </Text>
           </View>
 
-          {/* Form */}
           <View style={styles.form}>
+            <Controller
+              control={control}
+              name="displayName"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Görüntülenecek Ad"
+                  placeholder="Adın Soyadın"
+                  autoCapitalize="words"
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  error={errors.displayName?.message}
+                />
+              )}
+            />
+
             <Controller
               control={control}
               name="email"
@@ -90,6 +123,7 @@ export default function LoginScreen() {
                   onBlur={onBlur}
                   value={value}
                   error={errors.email?.message}
+                  containerStyle={{ marginTop: Spacing[4] }}
                 />
               )}
             />
@@ -106,30 +140,35 @@ export default function LoginScreen() {
                   onBlur={onBlur}
                   value={value}
                   error={errors.password?.message}
+                  hint="En az 6 karakter"
                   containerStyle={{ marginTop: Spacing[4] }}
                 />
               )}
             />
 
             <Button
-              label="Giriş Yap"
+              label="Kayıt Ol"
               onPress={handleSubmit(onSubmit)}
-              loading={loginMutation.isPending}
+              loading={registerMutation.isPending}
               fullWidth
               size="lg"
               style={{ marginTop: Spacing[8] }}
             />
           </View>
 
-          {/* Kayıt ol linki */}
           <View style={styles.footer}>
             <Text style={[Typography.bodyMd, { color: c.inkSecondary }]}>
-              Hesabın yok mu?{' '}
+              Zaten hesabın var mı?{' '}
             </Text>
-            <Link href={'/(auth)/register' as any} asChild>
+            <Link href="/(auth)/login" asChild>
               <Pressable accessibilityRole="link">
-                <Text style={[Typography.bodyMd, { color: c.ink, fontFamily: 'DM-Sans-SemiBold' }]}>
-                  Kayıt Ol
+                <Text
+                  style={[
+                    Typography.bodyMd,
+                    { color: c.ink, fontFamily: 'DM-Sans-SemiBold' },
+                  ]}
+                >
+                  Giriş Yap
                 </Text>
               </Pressable>
             </Link>
@@ -144,11 +183,11 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: Layout.screenPaddingH,
-    paddingTop: Spacing[12],
+    paddingTop: Spacing[6],
     paddingBottom: Spacing[8],
   },
   header: {
-    marginBottom: Spacing[10],
+    marginBottom: Spacing[8],
   },
   form: {
     flex: 1,

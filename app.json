@@ -39,9 +39,6 @@
           "photosPermission": "Cluber profil ve kulüp fotoğrafları için galeri erişimi gerekiyor."
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }

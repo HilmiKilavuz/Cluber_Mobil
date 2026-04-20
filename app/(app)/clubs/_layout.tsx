@@ -1,10 +1,10 @@
-// app/(auth)/_layout.tsx
-// Auth group stack navigator — korumasız rotalar (login, register, verify-email)
+// app/(app)/clubs/_layout.tsx
+// Kulüp stack navigator
 
 import { Stack } from 'expo-router';
 import { useColors } from '@/hooks/ui/useColorScheme';
 
-export default function AuthLayout() {
+export default function ClubsLayout() {
   const c = useColors();
 
   return (

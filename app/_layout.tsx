@@ -7,11 +7,11 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import {
-  DM_Sans_400Regular,
-  DM_Sans_500Medium,
-  DM_Sans_600SemiBold,
-  DM_Sans_700Bold,
-  DM_Sans_400Regular_Italic,
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+  DMSans_400Regular_Italic,
 } from '@expo-google-fonts/dm-sans';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
@@ -38,11 +38,11 @@ export default function RootLayout() {
   const scheme = useColorScheme();
 
   const [fontsLoaded, fontError] = useFonts({
-    'DM-Sans-Regular':  DM_Sans_400Regular,
-    'DM-Sans-Medium':   DM_Sans_500Medium,
-    'DM-Sans-SemiBold': DM_Sans_600SemiBold,
-    'DM-Sans-Bold':     DM_Sans_700Bold,
-    'DM-Sans-Italic':   DM_Sans_400Regular_Italic,
+    'DM-Sans-Regular':  DMSans_400Regular,
+    'DM-Sans-Medium':   DMSans_500Medium,
+    'DM-Sans-SemiBold': DMSans_600SemiBold,
+    'DM-Sans-Bold':     DMSans_700Bold,
+    'DM-Sans-Italic':   DMSans_400Regular_Italic,
   });
 
   useEffect(() => {
