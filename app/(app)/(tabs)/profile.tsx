@@ -129,7 +129,10 @@ export default function ProfileScreen() {
 
   return (
     <ScreenWrapper style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
         {/* Header */}
         <View style={styles.header}>
           <Text style={[Typography.displayMd, { color: c.ink }]}>Profil</Text>

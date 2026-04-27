@@ -4,6 +4,7 @@
 
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 import { API_URL } from '@/lib/constants/env';
 import { tokenStorage } from '@/lib/auth/tokenStorage';
 
@@ -30,19 +31,53 @@ axiosInstance.interceptors.request.use(
 // Response interceptor — global hata toast'ı
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     // x-silent-error header'ı varsa toast gösterme (örn. session check)
     const silent = error.config?.headers?.['x-silent-error'];
 
     if (!silent) {
-      const message =
-        error.response?.data?.message ??
-        'Bir hata oluştu. Lütfen tekrar dene.';
+      let title = 'Hata';
+      let message = 'Bir hata oluştu. Lütfen tekrar dene.';
+
+      if (!error.response) {
+        // Ağ hatası veya sunucu yanıt vermiyor
+        title = 'Bağlantı Hatası';
+        message = 'Sunucuya ulaşılamıyor. Lütfen internet bağlantınızı kontrol edin.';
+      } else {
+        const status = error.response.status;
+        const serverMessage = error.response.data?.message;
+
+        switch (status) {
+          case 401:
+            title = 'Oturum Süresi Doldu';
+            message = 'Lütfen tekrar giriş yapın.';
+            await tokenStorage.remove();
+            router.replace('/(auth)/login');
+            break;
+          case 403:
+            title = 'Yetkisiz İşlem';
+            message = 'Bu işlemi gerçekleştirmek için yetkiniz yok.';
+            break;
+          case 404:
+            title = 'Bulunamadı';
+            message = 'İstediğiniz kaynak bulunamadı.';
+            break;
+          case 500:
+            title = 'Sunucu Hatası';
+            message = 'Sunucuda bir problem var. Lütfen daha sonra tekrar deneyin.';
+            break;
+          default:
+            if (serverMessage) {
+              message = Array.isArray(serverMessage) ? serverMessage[0] : serverMessage;
+            }
+            break;
+        }
+      }
 
       Toast.show({
         type: 'error',
-        text1: 'Hata',
-        text2: Array.isArray(message) ? message[0] : message,
+        text1: title,
+        text2: message,
         visibilityTime: 4000,
       });
     }
