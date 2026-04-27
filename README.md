@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/images/icon.png" alt="Cluber Logo" width="120" height="120" onError="this.style.display='none'"/>
+
   <h1> Cluber Mobile</h1>
   <p><b>Topluluklar, Burada Yaşıyor.</b></p>
   
