@@ -1,75 +1,146 @@
-# Cluber Mobile 
+<div align="center">
+  <img src="./assets/images/icon.png" alt="Cluber Logo" width="120" height="120" onError="this.style.display='none'"/>
+  <h1> Cluber Mobile</h1>
+  <p><b>Topluluklar, Burada Yaşıyor.</b></p>
+  
+  [![Expo](https://img.shields.io/badge/Expo-1C1E24?style=for-the-badge&logo=expo&logoColor=D04A37)](https://expo.dev/)
+  [![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)](https://socket.io/)
+</div>
 
-Cluber Mobile, üniversite ve topluluk kulüplerini dijital ortamda yönetmeye yarayan **iOS & Android** uygulamasıdır. Kullanıcıların kulüp oluşturmasına, etkinliklere katılmasına ve topluluk içi gerçek zamanlı sohbet etmesine olanak tanır. Cluber Web projesiyle aynı güçlü backend altyapısını kullanır.
+<br/>
 
-##  Özellikler
+##  Proje Hakkında
 
-- **Gelişmiş Kimlik Doğrulama:** JWT tabanlı, e-posta onaylı ve güvenli (Expo Secure Store) oturum yönetimi.
-- **Kulüp Yönetimi:** Kulüp oluşturma, düzenleme, katılma, ayrılma ve üye rolleri (Owner, Admin, Moderator, Member).
-- **Gerçek Zamanlı Sohbet:** Socket.IO altyapısı ile kulüp içi anlık mesajlaşma.
-- **Etkinlik & RSVP:** Kulüp etkinlikleri oluşturma ve katılımcı listesi (RSVP) yönetimi.
-- **Dinamik UI:** React Native Reanimated ile desteklenmiş, karanlık/aydınlık (Dark/Light) tema destekli özel "Editorial" tasarım dili.
-- **Admin Paneli:** Kulüp yöneticileri için üye çıkarma, kulüp silme gibi gelişmiş kontroller.
+**Cluber Mobile**, üniversite ve topluluk kulüplerini dijital ortamda modern bir şekilde yönetmeye yarayan **iOS & Android** mobil uygulamasıdır. Kullanıcıların ilgi alanlarına uygun kulüpleri keşfetmesine, yeni topluluklar oluşturmasına, etkinliklere katılmasına ve kulüp üyeleriyle **gerçek zamanlı sohbet** etmesine olanak tanır. 
+
+Web uygulamasıyla (Cluber Web) aynı güçlü **NestJS / PostgreSQL** backend altyapısını kullanarak platformlar arası kusursuz bir deneyim sunar. "Editorial" minimalist tasarım anlayışıyla geliştirilmiş, kullanıcı dostu, nefes alan ve premium bir arayüze sahiptir.
+
+---
+
+## ✨ Özellikler
+
+###  Gelişmiş Kimlik Doğrulama & Güvenlik
+- JWT tabanlı, e-posta onaylı üyelik sistemi.
+- **Expo Secure Store** ile cihaz üzerinde yüksek güvenlikli token saklama.
+- Axios interceptor'ları ile otomatik hata ve oturum süresi (401, 403, 500 hataları) yönetimi.
+
+###  Kapsamlı Kulüp Yönetimi
+- **Keşfet & Katıl:** Kategori filtreleme ile yeni kulüpleri kolayca bulun.
+- **Rol Tabanlı Erişim:** Kurucu (Owner), Yönetici (Admin/Moderator) ve Üye (Member) hiyerarşisi ve yetkilendirme.
+- **Admin Paneli:** Üye çıkarma, kulüp düzenleme, avatar ve banner resimleri yükleme (Cloudinary destekli) ve kulüp silme/kapatma yetkileri.
+
+###  Gerçek Zamanlı Topluluk Sohbeti
+- **Socket.IO** altyapısıyla kulüp sohbet odalarında gecikmesiz, anlık mesajlaşma.
+- Akıcı mesajlaşma arayüzü ve performans odaklı `FlatList` entegrasyonu (Ters çevrilmiş liste - Inverted list).
+
+###  Etkinlik ve LCV (RSVP) Yönetimi
+- Kulübe özel detaylı etkinlikler (tarih, saat, konum bilgisi) planlama.
+- Tek tıkla etkinliklere katılma (RSVP) iptal etme ve katılımcı listesini yönetme.
+- Günü geçmiş etkinlikleri tespit edip katılımı dondurma mekanizması.
+
+###  Premium UI / UX Tasarımı
+- **Reanimated v3** ile desteklenen mikro animasyonlar ve pürüzsüz sayfa geçişleri.
+- Cihazınızın sistem temasına eş zamanlı uyum sağlayan **Dark Mode / Light Mode** desteği.
+- iPhone Çentiği / Dynamic Island uyumluluğu için `SafeAreaView` bazlı özel kenar boşluğu (Edge-to-Edge) mimarisi.
+
+---
 
 ##  Teknoloji Yığını
 
-- **Framework:** [Expo SDK 52+](https://expo.dev/) (React Native)
-- **Routing:** Expo Router v4 (Dosya tabanlı navigasyon)
-- **Dil:** TypeScript
-- **State Yönetimi:** [Zustand](https://zustand-demo.pmnd.rs/) (Global) & [TanStack React Query v5](https://tanstack.com/query/v5) (Sunucu Durumu)
-- **Ağ İstekleri:** Axios
-- **Gerçek Zamanlı İletişim:** Socket.IO Client v4
-- **Form & Validasyon:** React Hook Form + Zod
-- **Güvenlik:** Expo Secure Store
+| Kategori | Kullanılan Teknoloji |
+| :--- | :--- |
+| **Framework** | Expo SDK 52+ (Managed Workflow) |
+| **Dil** | TypeScript 5 & React Native |
+| **Navigasyon** | Expo Router v4 (Dosya tabanlı routing) |
+| **Global State** | Zustand |
+| **Sunucu State** | TanStack React Query v5 |
+| **Gerçek Zamanlı** | Socket.IO Client v4 |
+| **API İstekleri** | Axios |
+| **Form Yönetimi** | React Hook Form + Zod Validasyonu |
+| **Animasyonlar** | React Native Reanimated v3 |
 
-##  Proje Yapısı
-
-\`\`\`text
-Cluber_Mobil/
-├── app/                  # Expo Router ekranları ve layoutları
-│   ├── (auth)/           # Giriş, Kayıt, E-posta Doğrulama ekranları
-│   └── (app)/            # Korumalı ana uygulama ekranları (Keşfet, Kulüp detayları, Profil)
-├── components/           # Yeniden kullanılabilir UI, Form ve Layout bileşenleri
-├── hooks/                # Özelleştirilmiş React Hook'ları (Auth, Clubs, Events, Chat)
-├── services/             # Axios instance ve API servis fonksiyonları
-├── store/                # Zustand ile UI state yönetimi
-├── types/                # TypeScript interface ve type tanımlamaları
-└── lib/                  # Yardımcı fonksiyonlar, Token yönetimi, Socket factory
-\`\`\`
+---
 
 ##  Kurulum ve Geliştirme
 
-### Gereksinimler
-- Node.js (v18 veya üzeri)
-- npm veya yarn
-- iOS Simülatörü (Mac) veya Android Emülatörü (veyahut test için fiziksel cihazda **Expo Go** uygulaması)
-- Cluber Backend projesinin (NestJS) çalışır durumda olması.
+Proje kopyasını kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
 
-### 1. Projeyi Klonlayın
-\`\`\`bash
-git clone <repository-url>
+###  Gereksinimler
+- Node.js (v18 veya üzeri önerilir)
+- `npm` veya `yarn` paket yöneticisi
+- Cluber Backend projesinin (API ve Socket hizmetleri için lokalde veya uzak sunucuda) çalışır durumda olması.
+- [Expo Go](https://expo.dev/client) uygulaması (Fiziksel mobil cihazlarda test için) veya bilgisayarda kurulu iOS/Android simülatörü.
+
+### Projeyi Klonlayın
+```bash
+git clone https://github.com/HilmiKilavuz/Cluber_Mobil.git
 cd Cluber_Mobil
-\`\`\`
+```
 
-### 2. Bağımlılıkları Yükleyin
-\`\`\`bash
+###  Bağımlılıkları Yükleyin
+```bash
 npm install
-\`\`\`
+```
 
-### 3. Ortam Değişkenlerini Ayarlayın
-Proje kök dizininde bir \`.env\` dosyası oluşturun ve IP adresinizi girin (Fiziksel cihaz testleri için \`localhost\` kullanılamaz, yerel ağ IP'niz gerekir):
+###  Çevre Değişkenlerini (ENV) Ayarlayın
+Projenin ana dizininde bir `.env` dosyası oluşturun ve API/Socket URL bilgilerinizi ekleyin. 
+>  **Önemli:** Eğer fiziksel bir mobil cihazla (telefonunuzla) test ediyorsanız, backend adresiniz `localhost` **olamaz**. Bilgisayarınızın aynı Wi-Fi ağı üzerindeki yerel ağ IP'sini (Örn: `192.168.1.15`) girmelisiniz.
 
-\`\`\`env
-# Bilgisayarınızın yerel IP adresi (örn: 192.168.1.42)
-EXPO_PUBLIC_API_URL=http://<IP_ADRESINIZ>:3000/api/v1
-EXPO_PUBLIC_SOCKET_URL=http://<IP_ADRESINIZ>:3000
-\`\`\`
+```env
+# Fiziksel cihaz testi için bilgisayarınızın yerel IP adresi
+EXPO_PUBLIC_API_URL=http://<YEREL_IP_ADRESINIZ>:3000/api/v1
+EXPO_PUBLIC_SOCKET_URL=http://<YEREL_IP_ADRESINIZ>:3000
+```
 
-### 4. Geliştirme Sunucusunu Başlatın
-\`\`\`bash
+###  Projeyi Başlatın
+```bash
 npx expo start --clear
-\`\`\`
-*(Açılan terminaldeki QR kodu telefonunuzun kamerasıyla veya Expo Go uygulamasıyla okutarak uygulamayı test edebilirsiniz.)*
+```
+Terminalde beliren QR kodu iOS cihazınızın kendi kamerasıyla veya Android cihazınızdaki "Expo Go" uygulamasıyla okutarak projeyi anında test etmeye başlayabilirsiniz.
 
-##  Güvenlik Notu
-- Uygulamanın geliştirme notlarını içeren \`agent.md\`, \`design.md\` ve ortam değişkeni barındıran \`.env\` dosyaları \`.gitignore\` içine dahil edilmiştir ve versiyon kontrol sistemine (GitHub) aktarılmaz.
+### Testleri Çalıştırma
+Projeye yapılandırılmış *Jest* ve *React Native Testing Library* ortamı ile birim testleri (unit tests) çalıştırmak için:
+```bash
+npm run test
+```
+*Testleri izleme (watch) modunda çalıştırmak için:* `npm run test:watch`
+
+---
+
+##  Mimari Yapı
+
+Proje, dosya tabanlı navigasyon ile modülerliği harmanlayan aşağıdaki dizin mimarisini kullanır:
+
+```text
+Cluber_Mobil/
+├── app/                  # Sayfalar ve Navigasyon (Expo Router)
+│   ├── (auth)/           # Korumasız rotalar (Giriş, Kayıt, E-posta Doğrulama)
+│   └── (app)/            # Korumalı ana rotalar (Tab Bar, Keşfet, Profil, Kulüpler)
+├── components/           # Atom ve Molekül seviyesi UI Bileşenleri (Cards, Buttons, Modals)
+├── constants/            # Tasarım Sistemi (Design Tokens: Renkler, Tipografi, Boşluklar)
+├── hooks/                # Özel React Hook'ları (useAuth, useSocket, API etkileşimleri)
+├── lib/                  # Yardımcı araçlar (SecureStore adaptörü, Socket Factory)
+├── services/             # Axios instance ve modüler API servis sınıfları
+├── store/                # Zustand Global UI State dosyaları
+└── types/                # Ortak TypeScript arayüz (Interface) ve tipleri
+```
+
+---
+
+##  Gelecek Planları (Roadmap)
+
+Projeyi daha da ileri taşımak adına geliştirilmesi planlanan özellikler:
+
+- [ ] **Push Notifications (Anlık Bildirimler):** `expo-notifications` entegrasyonu ile cihaz dışında yeni mesaj, yaklaşan etkinlik ve kulüp daveti bildirimleri.
+- [ ] **Gelişmiş Arama:** Keşfet ekranında çoklu etiket seçimi ve detaylı filtreleme opsiyonları.
+- [ ] **Özel Mesajlaşma (DM):** Kulüp odalarından bağımsız, kullanıcıların birebir mesajlaşabilmesi.
+- [ ] **Sınama ve Güvenilirlik:** E2E (Uçtan uca) testlerinin yapılandırılıp test kapsamının (coverage) genişletilmesi.
+
+---
+
+<div align="center">
+  <p>Geliştirici: <b>Hilmi Kılavuz</b></p>
+  <p>Bu proje, modern web ve mobil teknolojileri deneyimlemek amacıyla açık kaynak kültürüne uygun olarak geliştirilmiştir.</p>
+</div>
