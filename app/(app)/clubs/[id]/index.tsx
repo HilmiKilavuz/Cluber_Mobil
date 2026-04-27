@@ -50,10 +50,20 @@ export default function ClubDetailScreen() {
   const membership = club?.memberships?.find((m) => m.userId === sessionData?.id);
   const isMember = !!membership;
   const isOwner = club?.creatorId === sessionData?.id;
-  const memberCount = club?._count?.memberships ?? 0;
+  const memberCount = club?._count?.memberships ?? club?.memberships?.length ?? 0;
 
   const { data: eventsData } = useEvents({ clubId: id, limit: 5 });
-  const events = eventsData?.pages.flatMap((p) => p.data) ?? [];
+  const rawEvents = eventsData?.pages.flatMap((p) => p.data) ?? [];
+  const events = React.useMemo(() => {
+    const now = new Date();
+    const upcoming = rawEvents
+      .filter((e) => new Date(e.date) >= now)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const past = rawEvents
+      .filter((e) => new Date(e.date) < now)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return [...upcoming, ...past];
+  }, [eventsData]);
 
   const handleJoin = async () => {
     if (!id) return;
@@ -61,7 +71,7 @@ export default function ClubDetailScreen() {
       await joinMutation.mutateAsync(id);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({ type: 'success', text1: 'Kulübe katıldın!' });
-    } catch {}
+    } catch { }
   };
 
   const handleLeave = () => {
@@ -74,7 +84,7 @@ export default function ClubDetailScreen() {
           try {
             await leaveMutation.mutateAsync(id!);
             Toast.show({ type: 'success', text1: 'Kulüpten ayrıldın.' });
-          } catch {}
+          } catch { }
         },
       },
     ]);
@@ -97,7 +107,7 @@ export default function ClubDetailScreen() {
   ];
 
   return (
-    <ScreenWrapper edges={['top']}>
+    <ScreenWrapper>
       <BackHeader
         title={club.name}
         rightAction={
@@ -175,13 +185,15 @@ export default function ClubDetailScreen() {
                   />
                 )
               )}
-              <Button
-                label="Sohbet"
-                onPress={() => router.push(`/(app)/clubs/${id}/chat` as any)}
-                variant="ghost"
-                size="sm"
-                icon={<Ionicons name="chatbubble-outline" size={14} color={c.ink} />}
-              />
+              {(isMember || isOwner) && (
+                <Button
+                  label="Sohbet"
+                  onPress={() => router.push(`/(app)/clubs/${id}/chat` as any)}
+                  variant="ghost"
+                  size="sm"
+                  icon={<Ionicons name="chatbubble-outline" size={14} color={c.ink} />}
+                />
+              )}
             </View>
           </View>
 

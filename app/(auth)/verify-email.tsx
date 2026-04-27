@@ -10,6 +10,7 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
@@ -75,60 +76,66 @@ export default function VerifyEmailScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={[Typography.displayMd, { color: c.ink }]}>
-              Kodu Gir
-            </Text>
+          <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+            <View style={styles.header}>
+              <Text style={[Typography.displayMd, { color: c.ink }]}>
+                Kodu Gir
+              </Text>
+              <Text
+                style={[
+                  Typography.bodyMd,
+                  { color: c.inkSecondary, marginTop: Spacing[2] },
+                ]}
+              >
+                {email
+                  ? `${email} adresine gönderilen 6 haneli kodu gir.`
+                  : 'E-posta adresine gönderilen 6 haneli kodu gir.'}
+              </Text>
+            </View>
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+            <Controller
+              control={control}
+              name="code"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Doğrulama Kodu"
+                  placeholder="123456"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  value={value}
+                  error={errors.code?.message}
+                />
+              )}
+            />
+
+            <Button
+              label="Doğrula"
+              onPress={handleSubmit(onSubmit)}
+              loading={verifyEmailMutation.isPending}
+              fullWidth
+              size="lg"
+              style={{ marginTop: Spacing[8] }}
+            />
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(300).duration(500)}>
             <Text
               style={[
-                Typography.bodyMd,
-                { color: c.inkSecondary, marginTop: Spacing[2] },
+                Typography.bodySm,
+                {
+                  color: c.inkTertiary,
+                  textAlign: 'center',
+                  marginTop: Spacing[6],
+                },
               ]}
             >
-              {email
-                ? `${email} adresine gönderilen 6 haneli kodu gir.`
-                : 'E-posta adresine gönderilen 6 haneli kodu gir.'}
+              Kod gelmedi mi? Spam klasörünü kontrol et ya da birkaç dakika bekle.
             </Text>
-          </View>
-
-          <Controller
-            control={control}
-            name="code"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                label="Doğrulama Kodu"
-                placeholder="123456"
-                keyboardType="number-pad"
-                maxLength={6}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                error={errors.code?.message}
-              />
-            )}
-          />
-
-          <Button
-            label="Doğrula"
-            onPress={handleSubmit(onSubmit)}
-            loading={verifyEmailMutation.isPending}
-            fullWidth
-            size="lg"
-            style={{ marginTop: Spacing[8] }}
-          />
-
-          <Text
-            style={[
-              Typography.bodySm,
-              {
-                color: c.inkTertiary,
-                textAlign: 'center',
-                marginTop: Spacing[6],
-              },
-            ]}
-          >
-            Kod gelmedi mi? Spam klasörünü kontrol et ya da birkaç dakika bekle.
-          </Text>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ScreenWrapper>

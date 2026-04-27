@@ -18,7 +18,7 @@ interface ScreenWrapperProps {
 export function ScreenWrapper({
   children,
   style,
-  edges = ['top', 'left', 'right'],
+  edges = ['top', 'left', 'right', 'bottom'],
 }: ScreenWrapperProps) {
   const c = useColors();
   const scheme = useColorScheme();

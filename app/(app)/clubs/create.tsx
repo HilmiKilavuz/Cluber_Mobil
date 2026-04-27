@@ -19,6 +19,9 @@ import { ScreenWrapper } from '@/components/layout/ScreenWrapper';
 import { BackHeader } from '@/components/layout/BackHeader';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { Avatar } from '@/components/ui/Avatar';
+import { Image } from 'expo-image';
 import { useCreateClub } from '@/hooks/clubs/useClubs';
 import { useColors } from '@/hooks/ui/useColorScheme';
 import { Typography } from '@/constants/Typography';
@@ -31,6 +34,8 @@ const createClubSchema = z.object({
   name: z.string().min(3, 'Kulüp adı en az 3 karakter olmalı').max(100),
   description: z.string().min(10, 'Açıklama en az 10 karakter olmalı').max(500),
   category: z.string().min(1, 'Kategori seçin'),
+  avatarUrl: z.string().optional().nullable(),
+  bannerUrl: z.string().optional().nullable(),
 });
 
 type CreateClubFormData = z.infer<typeof createClubSchema>;
@@ -47,14 +52,20 @@ export default function CreateClubScreen() {
     formState: { errors },
   } = useForm<CreateClubFormData>({
     resolver: zodResolver(createClubSchema),
-    defaultValues: { name: '', description: '', category: '' },
+    defaultValues: { name: '', description: '', category: '', avatarUrl: null, bannerUrl: null },
   });
 
   const selectedCategory = watch('category');
 
   const onSubmit = async (data: CreateClubFormData) => {
     try {
-      const club = await createClubMutation.mutateAsync(data);
+      const club = await createClubMutation.mutateAsync({
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        avatarUrl: data.avatarUrl ?? undefined,
+        bannerUrl: data.bannerUrl ?? undefined,
+      });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({ type: 'success', text1: 'Kulüp oluşturuldu!' });
       router.replace(`/(app)/clubs/${club.id}` as any);
@@ -78,6 +89,34 @@ export default function CreateClubScreen() {
             <Text style={[Typography.bodyMd, { color: c.inkSecondary, marginTop: Spacing[2] }]}>
               Topluluğunu oluşturmak için bilgileri doldur.
             </Text>
+          </View>
+
+          <View style={styles.mediaContainer}>
+            <ImageUpload
+              aspect={[16, 9]}
+              shape="rounded"
+              onUploadSuccess={(url) => setValue('bannerUrl', url, { shouldValidate: true })}
+              containerStyle={styles.bannerUploadContainer}
+              editIconPosition="top-right"
+            >
+              <View style={[styles.bannerPreview, { backgroundColor: c.bgSecondary, borderColor: c.border }]}>
+                {watch('bannerUrl') ? (
+                  <Image source={{ uri: watch('bannerUrl')! }} style={StyleSheet.absoluteFillObject} contentFit="cover" />
+                ) : (
+                  <Text style={[Typography.bodySm, { color: c.inkTertiary }]}>Banner Ekle (16:9)</Text>
+                )}
+              </View>
+            </ImageUpload>
+
+            <View style={[styles.avatarUploadWrapper, { backgroundColor: c.bg }]}>
+              <ImageUpload
+                aspect={[1, 1]}
+                shape="circle"
+                onUploadSuccess={(url) => setValue('avatarUrl', url, { shouldValidate: true })}
+              >
+                <Avatar uri={watch('avatarUrl') ?? undefined} size={80} />
+              </ImageUpload>
+            </View>
           </View>
 
           <Controller
@@ -173,6 +212,30 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing[6],
+  },
+  mediaContainer: {
+    marginBottom: Spacing[8],
+    alignItems: 'center',
+  },
+  bannerUploadContainer: {
+    width: '100%',
+    height: 160,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+  },
+  bannerPreview: {
+    width: '100%',
+    height: '100%',
+    borderWidth: 1,
+    borderRadius: Radius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarUploadWrapper: {
+    marginTop: -40,
+    padding: 4,
+    borderRadius: Radius.full,
   },
   categoriesGrid: {
     flexDirection: 'row',

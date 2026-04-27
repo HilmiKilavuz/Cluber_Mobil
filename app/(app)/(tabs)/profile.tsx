@@ -15,6 +15,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenWrapper } from '@/components/layout/ScreenWrapper';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Divider } from '@/components/ui/Divider';
 import { Badge } from '@/components/ui/Badge';
+import { ImageUpload } from '@/components/ui/ImageUpload';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useColors } from '@/hooks/ui/useColorScheme';
@@ -31,12 +33,17 @@ import { Typography } from '@/constants/Typography';
 import { Spacing, Layout, Radius, Shadows } from '@/constants/Tokens';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersService } from '@/services/users/users.service';
+import { useJoinedClubs } from '@/hooks/clubs/useClubs';
+import { useParticipatingEvents } from '@/hooks/events/useEvents';
+import { ClubCard } from '@/components/clubs/ClubCard';
+import { EventCard } from '@/components/events/EventCard';
 import Toast from 'react-native-toast-message';
 import * as Haptics from 'expo-haptics';
 
 const editProfileSchema = z.object({
   displayName: z.string().min(2, 'Ad en az 2 karakter olmalı').max(50),
-  bio: z.string().max(200, 'Bio en fazla 200 karakter olabilir').optional(),
+  bio: z.string().max(200, 'Bio en fazla 200 karakter olabilir').optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
 });
 
 const changePasswordSchema = z.object({
@@ -52,6 +59,8 @@ export default function ProfileScreen() {
   const { sessionQuery, logoutMutation, changePasswordMutation } = useAuth();
   const queryClient = useQueryClient();
   const user = sessionQuery.data;
+  const { data: joinedClubs, isLoading: isJoinedClubsLoading } = useJoinedClubs();
+  const { data: participatingEvents, isLoading: isParticipatingEventsLoading } = useParticipatingEvents();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
@@ -71,9 +80,11 @@ export default function ProfileScreen() {
     handleSubmit: handleEditSubmit,
     formState: { errors: editErrors },
     reset: resetEdit,
+    setValue: setEditValue,
+    watch: watchEdit,
   } = useForm<EditProfileData>({
     resolver: zodResolver(editProfileSchema),
-    defaultValues: { displayName: user?.displayName ?? '', bio: user?.bio ?? '' },
+    defaultValues: { displayName: user?.displayName ?? '', bio: user?.bio ?? '', avatarUrl: user?.avatarUrl ?? null },
   });
 
   const {
@@ -98,7 +109,11 @@ export default function ProfileScreen() {
   };
 
   const onEditSubmit = (data: EditProfileData) => {
-    updateProfileMutation.mutate(data);
+    updateProfileMutation.mutate({
+      ...data,
+      bio: data.bio ?? undefined,
+      avatarUrl: data.avatarUrl ?? undefined,
+    });
   };
 
   const onPasswordSubmit = async (data: ChangePasswordData) => {
@@ -113,7 +128,7 @@ export default function ProfileScreen() {
   if (!user) return <LoadingSpinner fullScreen />;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: c.bg }]} edges={['top']}>
+    <ScreenWrapper style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
@@ -156,13 +171,57 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Üye Olunan Kulüpler */}
+        <View style={{ marginTop: Spacing[6] }}>
+          <Text style={[Typography.headingMd, { color: c.ink, marginBottom: Spacing[4], paddingHorizontal: Layout.screenPaddingH }]}>
+            Üyesi Olduğum Kulüpler
+          </Text>
+          {isJoinedClubsLoading ? (
+            <LoadingSpinner />
+          ) : joinedClubs && joinedClubs.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: Spacing[4], paddingHorizontal: Layout.screenPaddingH }}>
+              {joinedClubs.map((club) => (
+                <View key={club.id} style={{ width: 280 }}>
+                  <ClubCard club={club} />
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <Text style={[Typography.bodyMd, { color: c.inkSecondary, paddingHorizontal: Layout.screenPaddingH }]}>
+              Henüz bir kulübe üye değilsiniz.
+            </Text>
+          )}
+        </View>
+
+        {/* Katılınan Etkinlikler */}
+        <View style={{ marginTop: Spacing[6] }}>
+          <Text style={[Typography.headingMd, { color: c.ink, marginBottom: Spacing[4], paddingHorizontal: Layout.screenPaddingH }]}>
+            Katıldığım Etkinlikler
+          </Text>
+          {isParticipatingEventsLoading ? (
+            <LoadingSpinner />
+          ) : participatingEvents && participatingEvents.length > 0 ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: Spacing[4], paddingHorizontal: Layout.screenPaddingH }}>
+              {participatingEvents.map((event) => (
+                <View key={event.id} style={{ width: 280 }}>
+                  <EventCard event={event} />
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <Text style={[Typography.bodyMd, { color: c.inkSecondary, paddingHorizontal: Layout.screenPaddingH }]}>
+              Yaklaşan bir etkinliğiniz bulunmuyor.
+            </Text>
+          )}
+        </View>
+
         {/* Aksiyonlar */}
-        <View style={[styles.section, { borderColor: c.border, backgroundColor: c.surface }]}>
+        <View style={[styles.section, { borderColor: c.border, backgroundColor: c.surface, marginTop: Spacing[6] }]}>
           <MenuItem
             icon="person-outline"
             label="Profili Düzenle"
             onPress={() => {
-              resetEdit({ displayName: user.displayName, bio: user.bio ?? '' });
+              resetEdit({ displayName: user.displayName, bio: user.bio ?? '', avatarUrl: user.avatarUrl ?? null });
               setEditModalVisible(true);
             }}
             color={c.ink}
@@ -202,6 +261,15 @@ export default function ProfileScreen() {
               contentContainerStyle={styles.modalContent}
               keyboardShouldPersistTaps="handled"
             >
+              <View style={{ alignItems: 'center', marginBottom: Spacing[6] }}>
+                <ImageUpload
+                  aspect={[1, 1]}
+                  onUploadSuccess={(url) => setEditValue('avatarUrl', url, { shouldDirty: true })}
+                >
+                  <Avatar uri={watchEdit('avatarUrl') ?? user.avatarUrl} name={user.displayName} size={96} />
+                </ImageUpload>
+              </View>
+
               <Controller
                 control={editControl}
                 name="displayName"
@@ -304,7 +372,7 @@ export default function ProfileScreen() {
           </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

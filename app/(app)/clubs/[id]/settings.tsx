@@ -14,6 +14,9 @@ import { BackHeader } from '@/components/layout/BackHeader';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { Avatar } from '@/components/ui/Avatar';
+import { Image } from 'expo-image';
 import { useClub, useUpdateClub, useDeleteClub } from '@/hooks/clubs/useClubs';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { useColors } from '@/hooks/ui/useColorScheme';
@@ -27,6 +30,8 @@ const settingsSchema = z.object({
   name: z.string().min(3).max(100),
   description: z.string().min(10).max(500),
   category: z.string().min(1),
+  avatarUrl: z.string().optional().nullable(),
+  bannerUrl: z.string().optional().nullable(),
 });
 type SettingsForm = z.infer<typeof settingsSchema>;
 
@@ -41,13 +46,19 @@ export default function ClubSettingsScreen() {
 
   const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<SettingsForm>({
     resolver: zodResolver(settingsSchema),
-    values: { name: club?.name ?? '', description: club?.description ?? '', category: club?.category ?? '' },
+    values: { name: club?.name ?? '', description: club?.description ?? '', category: club?.category ?? '', avatarUrl: club?.avatarUrl ?? null, bannerUrl: club?.bannerUrl ?? null },
   });
   const selectedCategory = watch('category');
 
   const onSave = async (data: SettingsForm) => {
     try {
-      await updateMutation.mutateAsync(data);
+      await updateMutation.mutateAsync({
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        avatarUrl: data.avatarUrl ?? undefined,
+        bannerUrl: data.bannerUrl ?? undefined,
+      });
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Toast.show({ type: 'success', text1: 'Kulüp güncellendi.' });
     } catch {}
@@ -73,6 +84,33 @@ export default function ClubSettingsScreen() {
       <BackHeader title="Kulüp Ayarları" />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <View style={styles.mediaContainer}>
+            <ImageUpload
+              aspect={[16, 9]}
+              shape="rounded"
+              onUploadSuccess={(url) => setValue('bannerUrl', url, { shouldValidate: true })}
+              containerStyle={styles.bannerUploadContainer}
+              editIconPosition="top-right"
+            >
+              <View style={[styles.bannerPreview, { backgroundColor: c.bgSecondary, borderColor: c.border }]}>
+                {watch('bannerUrl') ? (
+                  <Image source={{ uri: watch('bannerUrl')! }} style={StyleSheet.absoluteFillObject} contentFit="cover" />
+                ) : (
+                  <Text style={[Typography.bodySm, { color: c.inkTertiary }]}>Banner Ekle (16:9)</Text>
+                )}
+              </View>
+            </ImageUpload>
+
+            <View style={[styles.avatarUploadWrapper, { backgroundColor: c.bg }]}>
+              <ImageUpload
+                aspect={[1, 1]}
+                shape="circle"
+                onUploadSuccess={(url) => setValue('avatarUrl', url, { shouldValidate: true })}
+              >
+                <Avatar uri={watch('avatarUrl') ?? undefined} name={club?.name} size={80} />
+              </ImageUpload>
+            </View>
+          </View>
           <Controller control={control} name="name"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input label="Kulüp Adı" onChangeText={onChange} onBlur={onBlur} value={value} error={errors.name?.message} />
@@ -112,4 +150,28 @@ const styles = StyleSheet.create({
   categoriesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing[2] },
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full, borderWidth: 1 },
   dangerZone: { marginTop: Spacing[8], borderWidth: 1, borderRadius: Radius.lg, padding: Spacing[5] },
+  mediaContainer: {
+    marginBottom: Spacing[8],
+    alignItems: 'center',
+  },
+  bannerUploadContainer: {
+    width: '100%',
+    height: 160,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+  },
+  bannerPreview: {
+    width: '100%',
+    height: '100%',
+    borderWidth: 1,
+    borderRadius: Radius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarUploadWrapper: {
+    marginTop: -40,
+    padding: 4,
+    borderRadius: Radius.full,
+  },
 });

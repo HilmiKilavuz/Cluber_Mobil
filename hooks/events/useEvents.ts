@@ -18,6 +18,7 @@ const EVENT_QUERY_KEYS = {
   all: ['events'] as const,
   list: (filters?: EventFilters) => ['events', 'list', filters] as const,
   detail: (id: string) => ['events', 'detail', id] as const,
+  participating: ['events', 'participating'] as const,
 };
 
 export const useEvents = (
@@ -35,6 +36,13 @@ export const useEvents = (
       }
       return undefined;
     },
+  });
+};
+
+export const useParticipatingEvents = (): UseQueryResult<Event[], Error> => {
+  return useQuery({
+    queryKey: EVENT_QUERY_KEYS.participating,
+    queryFn: () => eventService.getParticipatingEvents(),
   });
 };
 
@@ -84,6 +92,7 @@ export const useRSVP = (eventId: string): UseMutationResult<void, Error, void> =
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.detail(eventId) });
       queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.participating });
     },
   });
 };
@@ -95,6 +104,7 @@ export const useCancelRSVP = (eventId: string): UseMutationResult<void, Error, v
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.detail(eventId) });
       queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.all });
+      queryClient.invalidateQueries({ queryKey: EVENT_QUERY_KEYS.participating });
     },
   });
 };

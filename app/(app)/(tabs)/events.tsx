@@ -11,7 +11,9 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ScreenWrapper } from '@/components/layout/ScreenWrapper';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { EventCard } from '@/components/events/EventCard';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -41,49 +43,74 @@ export default function EventsScreen() {
     [data],
   );
 
+  const sortedEvents = useMemo(() => {
+    const now = new Date();
+    const upcoming = events
+      .filter((e) => new Date(e.date) >= now)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const past = events
+      .filter((e) => new Date(e.date) < now)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    return [...upcoming, ...past];
+  }, [events]);
+
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: c.bg }]} edges={['top']}>
+    <ScreenWrapper style={styles.container} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={[Typography.displayMd, { color: c.ink }]}>Etkinlikler</Text>
-        <Text style={[Typography.bodySm, { color: c.inkSecondary, marginTop: 2 }]}>
-          Yaklaşan etkinlikleri keşfet
-        </Text>
-      </View>
+      <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+        <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+          <View>
+            <Text style={[Typography.displayMd, { color: c.ink }]}>Etkinlikler</Text>
+            <Text style={[Typography.bodySm, { color: c.inkSecondary, marginTop: 2 }]}>
+              Yaklaşan etkinlikleri keşfet
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push('/(app)/events/create' as any)}
+            style={{ width: 44, height: 44, borderRadius: Radius.full, backgroundColor: c.accent, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Ionicons name="add" size={24} color={c.accentFg} />
+          </Pressable>
+        </View>
+      </Animated.View>
 
       {/* Arama */}
-      <View
-        style={[
-          styles.searchContainer,
-          { borderColor: c.border, backgroundColor: c.surface },
-        ]}
-      >
-        <Ionicons name="search-outline" size={18} color={c.inkTertiary} />
-        <TextInput
-          style={[styles.searchInput, { color: c.ink, fontFamily: 'DM-Sans-Regular' }]}
-          placeholder="Etkinlik ara..."
-          placeholderTextColor={c.inkTertiary}
-          value={search}
-          onChangeText={setSearch}
-          returnKeyType="search"
-          autoCorrect={false}
-        />
-        {search.length > 0 && (
-          <Pressable onPress={() => setSearch('')}>
-            <Ionicons name="close-circle" size={18} color={c.inkTertiary} />
-          </Pressable>
-        )}
-      </View>
+      <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+        <View
+          style={[
+            styles.searchContainer,
+            { borderColor: c.border, backgroundColor: c.surface },
+          ]}
+        >
+          <Ionicons name="search-outline" size={18} color={c.inkTertiary} />
+          <TextInput
+            style={[styles.searchInput, { color: c.ink, fontFamily: 'DM-Sans-Regular' }]}
+            placeholder="Etkinlik ara..."
+            placeholderTextColor={c.inkTertiary}
+            value={search}
+            onChangeText={setSearch}
+            returnKeyType="search"
+            autoCorrect={false}
+          />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch('')}>
+              <Ionicons name="close-circle" size={18} color={c.inkTertiary} />
+            </Pressable>
+          )}
+        </View>
+      </Animated.View>
 
       {isLoading ? (
         <LoadingSpinner message="Etkinlikler yükleniyor..." />
       ) : (
         <FlatList
-          data={events}
+          data={sortedEvents}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => <EventCard event={item} index={index} />}
           contentContainerStyle={styles.listContent}
@@ -118,7 +145,7 @@ export default function EventsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 

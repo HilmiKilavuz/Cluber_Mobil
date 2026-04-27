@@ -21,6 +21,19 @@ export default function ClubEventsScreen() {
 
   const events: Event[] = useMemo(() => data?.pages.flatMap((p) => p.data) ?? [], [data]);
 
+  const sortedEvents = useMemo(() => {
+    const now = new Date();
+    const upcoming = events
+      .filter((e) => new Date(e.date) >= now)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // en yakın üstte
+
+    const past = events
+      .filter((e) => new Date(e.date) < now)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // en son geçmiş önce
+
+    return [...upcoming, ...past];
+  }, [events]);
+
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
@@ -30,7 +43,7 @@ export default function ClubEventsScreen() {
       <BackHeader title="Etkinlikler" />
       {isLoading ? <LoadingSpinner /> : (
         <FlatList
-          data={events}
+          data={sortedEvents}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => <EventCard event={item} index={index} />}
           contentContainerStyle={styles.content}

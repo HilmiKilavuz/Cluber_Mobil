@@ -27,6 +27,10 @@ export interface Event {
   maxParticipants?: number | null;
   category?: string | null;
   participants?: EventParticipant[];
+  club?: {
+    name: string;
+    imageUrl?: string | null;
+  };
   _count?: {
     participants: number;
   };

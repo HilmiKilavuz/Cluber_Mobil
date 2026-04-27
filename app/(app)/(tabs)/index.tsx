@@ -12,7 +12,8 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ScreenWrapper } from '@/components/layout/ScreenWrapper';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ClubCard } from '@/components/clubs/ClubCard';
@@ -61,77 +62,83 @@ export default function DiscoverScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: c.bg }]} edges={['top']}>
+    <ScreenWrapper style={styles.container} edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={[Typography.displayMd, { color: c.ink }]}>Keşfet</Text>
-          <Text style={[Typography.bodySm, { color: c.inkSecondary, marginTop: 2 }]}>
-            Topluluğuna katıl
-          </Text>
+      <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+        <View style={styles.header}>
+          <View>
+            <Text style={[Typography.displayMd, { color: c.ink }]}>Keşfet</Text>
+            <Text style={[Typography.bodySm, { color: c.inkSecondary, marginTop: 2 }]}>
+              Topluluğuna katıl
+            </Text>
+          </View>
+          <Pressable
+            onPress={() => router.push('/(app)/clubs/create' as any)}
+            style={[styles.createButton, { backgroundColor: c.accent }]}
+            accessibilityLabel="Kulüp oluştur"
+            accessibilityRole="button"
+          >
+            <Ionicons name="add" size={22} color={c.accentFg} />
+          </Pressable>
         </View>
-        <Pressable
-          onPress={() => router.push('/(app)/clubs/create' as any)}
-          style={[styles.createButton, { backgroundColor: c.accent }]}
-          accessibilityLabel="Kulüp oluştur"
-          accessibilityRole="button"
-        >
-          <Ionicons name="add" size={22} color={c.accentFg} />
-        </Pressable>
-      </View>
+      </Animated.View>
 
       {/* Arama kutusu */}
-      <View style={[styles.searchContainer, { borderColor: c.border, backgroundColor: c.surface }]}>
-        <Ionicons name="search-outline" size={18} color={c.inkTertiary} />
-        <TextInput
-          style={[styles.searchInput, { color: c.ink, fontFamily: 'DM-Sans-Regular' }]}
-          placeholder="Kulüp ara..."
-          placeholderTextColor={c.inkTertiary}
-          value={search}
-          onChangeText={setSearch}
-          returnKeyType="search"
-          autoCorrect={false}
-        />
-        {search.length > 0 && (
-          <Pressable onPress={() => setSearch('')}>
-            <Ionicons name="close-circle" size={18} color={c.inkTertiary} />
-          </Pressable>
-        )}
-      </View>
+      <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+        <View style={[styles.searchContainer, { borderColor: c.border, backgroundColor: c.surface }]}>
+          <Ionicons name="search-outline" size={18} color={c.inkTertiary} />
+          <TextInput
+            style={[styles.searchInput, { color: c.ink, fontFamily: 'DM-Sans-Regular' }]}
+            placeholder="Kulüp ara..."
+            placeholderTextColor={c.inkTertiary}
+            value={search}
+            onChangeText={setSearch}
+            returnKeyType="search"
+            autoCorrect={false}
+          />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch('')}>
+              <Ionicons name="close-circle" size={18} color={c.inkTertiary} />
+            </Pressable>
+          )}
+        </View>
+      </Animated.View>
 
       {/* Kategori filtresi */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesContainer}
-        style={{ maxHeight: 44 }}
-      >
-        {CLUB_CATEGORIES.map((cat) => (
-          <Pressable
-            key={cat}
-            onPress={() => handleCategoryPress(cat)}
-            style={[
-              styles.categoryChip,
-              {
-                backgroundColor: selectedCategory === cat ? c.accent : c.surface,
-                borderColor: selectedCategory === cat ? c.accent : c.border,
-              },
-            ]}
-          >
-            <Text
+      <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+          style={styles.categoriesScroll}
+        >
+          {CLUB_CATEGORIES.map((cat) => (
+            <Pressable
+              key={cat}
+              onPress={() => handleCategoryPress(cat)}
               style={[
-                Typography.caption,
+                styles.categoryChip,
                 {
-                  color: selectedCategory === cat ? c.accentFg : c.inkSecondary,
-                  letterSpacing: 0.3,
+                  backgroundColor: selectedCategory === cat ? c.accent : c.surface,
+                  borderColor: selectedCategory === cat ? c.accent : c.border,
                 },
               ]}
             >
-              {cat}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  Typography.caption,
+                  {
+                    color: selectedCategory === cat ? c.accentFg : c.inkSecondary,
+                    letterSpacing: 0.3,
+                  },
+                ]}
+              >
+                {cat}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </Animated.View>
 
       {/* Kulüp listesi */}
       {isLoading ? (
@@ -177,7 +184,7 @@ export default function DiscoverScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 }
 
@@ -214,14 +221,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     height: 44,
   },
+  categoriesScroll: {
+    flexShrink: 0,
+    marginBottom: Spacing[4],
+  },
   categoriesContainer: {
     paddingHorizontal: Layout.screenPaddingH,
-    paddingBottom: Spacing[3],
+    paddingVertical: Spacing[1],
     gap: Spacing[2],
+    alignItems: 'center',
   },
   categoryChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: Radius.full,
     borderWidth: 1,
   },

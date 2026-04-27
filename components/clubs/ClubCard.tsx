@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,14 +24,25 @@ export function ClubCard({ club, index = 0 }: ClubCardProps) {
 
   const memberCount = club._count?.memberships ?? club.memberships?.length ?? 0;
 
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   const handlePress = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     router.push(`/(app)/clubs/${club.id}` as any);
   };
 
   return (
-    <Animated.View entering={FadeInDown.delay(index * 60).duration(300)}>
+    <Animated.View 
+      entering={FadeInDown.delay(index * 60).duration(300)}
+      style={animatedStyle}
+    >
       <Pressable
+        onPressIn={() => { scale.value = withTiming(0.98, { duration: 100 }); }}
+        onPressOut={() => { scale.value = withTiming(1, { duration: 150 }); }}
         onPress={handlePress}
         style={({ pressed }) => [
           styles.card,

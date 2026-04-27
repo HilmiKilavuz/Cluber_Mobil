@@ -14,6 +14,11 @@ export const eventService = {
     return response.data;
   },
 
+  getParticipatingEvents: async (): Promise<Event[]> => {
+    const response = await axiosInstance.get<Event[]>(`${EVENTS_BASE_PATH}/my/participating`);
+    return response.data;
+  },
+
   getEventById: async (id: string): Promise<Event> => {
     const response = await axiosInstance.get<Event>(`${EVENTS_BASE_PATH}/${id}`);
     return response.data;
@@ -34,7 +39,7 @@ export const eventService = {
   },
 
   rsvpEvent: async (id: string): Promise<void> => {
-    await axiosInstance.post(`${EVENTS_BASE_PATH}/${id}/rsvp`);
+    await axiosInstance.post(`${EVENTS_BASE_PATH}/${id}/rsvp`, { status: 'GOING' });
   },
 
   cancelRSVP: async (id: string): Promise<void> => {

@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
@@ -45,7 +46,6 @@ export default function RegisterScreen() {
   const {
     control,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -78,101 +78,107 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={[Typography.displayMd, { color: c.ink }]}>
-              Hesap Oluştur
-            </Text>
-            <Text
-              style={[
-                Typography.bodyMd,
-                { color: c.inkSecondary, marginTop: Spacing[2] },
-              ]}
-            >
-              Kayıt olduktan sonra e-postanı doğrulaman gerekecek.
-            </Text>
-          </View>
+          <Animated.View entering={FadeInDown.delay(100).duration(500)}>
+            <View style={styles.header}>
+              <Text style={[Typography.displayMd, { color: c.ink }]}>
+                Hesap Oluştur
+              </Text>
+              <Text
+                style={[
+                  Typography.bodyMd,
+                  { color: c.inkSecondary, marginTop: Spacing[2] },
+                ]}
+              >
+                Kayıt olduktan sonra e-postanı doğrulaman gerekecek.
+              </Text>
+            </View>
+          </Animated.View>
 
-          <View style={styles.form}>
-            <Controller
-              control={control}
-              name="displayName"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label="Görüntülenecek Ad"
-                  placeholder="Adın Soyadın"
-                  autoCapitalize="words"
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  error={errors.displayName?.message}
-                />
-              )}
-            />
+          <Animated.View entering={FadeInDown.delay(200).duration(500)} style={styles.form}>
+            <View>
+              <Controller
+                control={control}
+                name="displayName"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Görüntülenecek Ad"
+                    placeholder="Adın Soyadın"
+                    autoCapitalize="words"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    error={errors.displayName?.message}
+                  />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label="E-posta"
-                  placeholder="ornek@email.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  error={errors.email?.message}
-                  containerStyle={{ marginTop: Spacing[4] }}
-                />
-              )}
-            />
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="E-posta"
+                    placeholder="ornek@email.com"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    error={errors.email?.message}
+                    containerStyle={{ marginTop: Spacing[4] }}
+                  />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label="Şifre"
-                  placeholder="••••••••"
-                  secureTextEntry
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  value={value}
-                  error={errors.password?.message}
-                  hint="En az 6 karakter"
-                  containerStyle={{ marginTop: Spacing[4] }}
-                />
-              )}
-            />
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input
+                    label="Şifre"
+                    placeholder="••••••••"
+                    secureTextEntry
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    value={value}
+                    error={errors.password?.message}
+                    hint="En az 6 karakter"
+                    containerStyle={{ marginTop: Spacing[4] }}
+                  />
+                )}
+              />
 
-            <Button
-              label="Kayıt Ol"
-              onPress={handleSubmit(onSubmit)}
-              loading={registerMutation.isPending}
-              fullWidth
-              size="lg"
-              style={{ marginTop: Spacing[8] }}
-            />
-          </View>
+              <Button
+                label="Kayıt Ol"
+                onPress={handleSubmit(onSubmit)}
+                loading={registerMutation.isPending}
+                fullWidth
+                size="lg"
+                style={{ marginTop: Spacing[8] }}
+              />
+            </View>
+          </Animated.View>
 
-          <View style={styles.footer}>
-            <Text style={[Typography.bodyMd, { color: c.inkSecondary }]}>
-              Zaten hesabın var mı?{' '}
-            </Text>
-            <Link href="/(auth)/login" asChild>
-              <Pressable accessibilityRole="link">
-                <Text
-                  style={[
-                    Typography.bodyMd,
-                    { color: c.ink, fontFamily: 'DM-Sans-SemiBold' },
-                  ]}
-                >
-                  Giriş Yap
-                </Text>
-              </Pressable>
-            </Link>
-          </View>
+          <Animated.View entering={FadeInDown.delay(300).duration(500)}>
+            <View style={styles.footer}>
+              <Text style={[Typography.bodyMd, { color: c.inkSecondary }]}>
+                Zaten hesabın var mı?{' '}
+              </Text>
+              <Link href="/(auth)/login" asChild>
+                <Pressable accessibilityRole="link">
+                  <Text
+                    style={[
+                      Typography.bodyMd,
+                      { color: c.ink, fontFamily: 'DM-Sans-SemiBold' },
+                    ]}
+                  >
+                    Giriş Yap
+                  </Text>
+                </Pressable>
+              </Link>
+            </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ScreenWrapper>
